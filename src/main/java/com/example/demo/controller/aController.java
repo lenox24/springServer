@@ -1,43 +1,35 @@
 package com.example.demo.controller;
 
+import com.example.demo.config.JwtTokenProvider;
 import com.example.demo.model.DataModel;
 import com.example.demo.repo.DataModelRepo;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.bind.DatatypeConverter;
-import java.security.Key;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 @RequestMapping(value = "api/a")
 public class aController {
-    @Autowired
+    private final
     DataModelRepo dataRepo;
 
-    private String getToken(String token) {
-        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-
-        return Jwts.parser()
-                .setSigningKey("dart")
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+    public aController(DataModelRepo dataRepo) {
+        this.dataRepo = dataRepo;
     }
 
-    @RequestMapping(value = "login", method = RequestMethod.POST)
+    @PostMapping("login")
     public ResponseEntity login(@RequestBody JSONObject reqJson) {
-        String token = new DataModel().getUserToken("login", reqJson.get("id").toString(), reqJson.get("pass").toString());
+        String token = JwtTokenProvider.getUserToken("login", reqJson.get("id").toString(), reqJson.get("pass").toString());
 
-        String subject = getToken(token);
+        Map<String, Object> claims = JwtTokenProvider.getToken(token);
 
-        return new ResponseEntity<>(subject, HttpStatus.OK);
+        String id= claims.get("id").toString();
+
+        return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
     @PostMapping("register")
