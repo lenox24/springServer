@@ -1,45 +1,50 @@
 package com.example.demo.controller;
 
 import com.example.demo.config.JwtTokenProvider;
-import com.example.demo.model.DataModel;
-import com.example.demo.repo.DataModelRepo;
+import com.example.demo.model.User;
+import com.example.demo.repo.UserRepo;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @CrossOrigin
 @RestController
 @RequestMapping(value = "api/a")
 public class aController {
     private final
-    DataModelRepo dataRepo;
+    UserRepo userRepo;
 
-    public aController(DataModelRepo dataRepo) {
-        this.dataRepo = dataRepo;
+    public aController(UserRepo userRepo) {
+        this.userRepo = userRepo;
     }
 
     @PostMapping("login")
     public ResponseEntity login(@RequestBody JSONObject reqJson) {
-        String token = JwtTokenProvider.getUserToken("login", reqJson.get("id").toString(), reqJson.get("pass").toString());
+        User user = userRepo.findByUserId(reqJson.get("id").toString());
 
-        Map<String, Object> claims = JwtTokenProvider.getToken(token);
+        if (null == user) {
+            return new ResponseEntity<>("id doesn't exits", HttpStatus.BAD_REQUEST);
+        } else if (!user.getPassword().equals(reqJson.get("password").toString())) {
+            return new ResponseEntity<>("Password is incorrect", HttpStatus.BAD_REQUEST);
+        }
 
-        String id= claims.get("id").toString();
+        JSONObject resJson = new JSONObject();
+        resJson.put("accessToken", JwtTokenProvider.getUserToken("access"));
+        resJson.put("refreshToken", JwtTokenProvider.getUserToken("refresh"));
 
-        return new ResponseEntity<>(id, HttpStatus.OK);
+        return new ResponseEntity<>(resJson, HttpStatus.OK);
     }
 
     @PostMapping("register")
     public ResponseEntity register(@RequestBody JSONObject reqJson) {
-        if (dataRepo.findById(reqJson.get("id").toString()).isPresent()) {
+        if (userRepo.findById(reqJson.get("id").toString()).isPresent()) {
             return new ResponseEntity<>("already exist", HttpStatus.BAD_REQUEST);
         }
-        DataModel model = new DataModel();
+        User model = new User();
         model.setByJson(reqJson);
-        dataRepo.insert(model);
+        userRepo.insert(model);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

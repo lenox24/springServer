@@ -14,7 +14,7 @@ import java.util.Map;
 public class JwtTokenProvider {
     private static Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    private static String getUserToken(String type, String id) {
+    public static String getUserToken(String type) {
         long expirationTime;
         switch (type) {
             case "access":
@@ -28,7 +28,6 @@ public class JwtTokenProvider {
         }
 
         return Jwts.builder()
-                .setSubject(id)
                 .claim("type", type)
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(key)
@@ -54,7 +53,7 @@ public class JwtTokenProvider {
                     .signWith(key)
                     .compact();
         } else
-            return getUserToken(type, id);
+            return getUserToken(type);
     }
 
     public static boolean getExpToken(String token) {
