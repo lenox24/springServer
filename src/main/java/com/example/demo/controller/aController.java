@@ -20,12 +20,12 @@ public class aController {
     }
 
     @PostMapping("login")
-    public ResponseEntity login(@RequestBody JSONObject reqJson) {
-        User user = userRepo.findByUserId(reqJson.get("id").toString());
+    public ResponseEntity login(@RequestBody User reqJson) {
+        User user = userRepo.findByUserId(reqJson.getId());
 
         if (null == user) {
             return new ResponseEntity<>("id doesn't exits", HttpStatus.BAD_REQUEST);
-        } else if (!user.getPassword().equals(reqJson.get("password").toString())) {
+        } else if (!user.getPassword().equals(reqJson.getPassword())) {
             return new ResponseEntity<>("Password is incorrect", HttpStatus.BAD_REQUEST);
         }
 

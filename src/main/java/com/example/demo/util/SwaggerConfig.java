@@ -25,10 +25,8 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Spring Boot REST Sample with Swagger")
-                .description("스웨거 테스트")
+                .title("Re-Reverse-Project API 문서")
                 .termsOfServiceUrl("http://www-03.ibm.com/software/sla/sladb.nsf/sla/bm?Open")
-                .contact("user@gmail.com")
                 .license("Apache License Version 2.0")
                 .licenseUrl("https://github.com/IBM-Bluemix/news-aggregator/blob/master/LICENSE")
                 .version("2.0")

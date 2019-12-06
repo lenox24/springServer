@@ -23,6 +23,7 @@ public class User {
         this.password = json.get("password").toString();
     }
 
+    public String getId() { return id; }
     public String getPassword() {
         return password;
     }
