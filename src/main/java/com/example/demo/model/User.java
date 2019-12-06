@@ -1,6 +1,5 @@
 package com.example.demo.model;
 
-import com.example.demo.config.JwtTokenProvider;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
 import org.springframework.data.annotation.Id;
